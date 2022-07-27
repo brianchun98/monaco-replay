@@ -1,3 +1,3 @@
-# monaco+firepad_code-replay
+# Monaco+Firepad_Code-Replay
 
-page link: https://brianchun98.github.io/monaco-replay/
+Page link: https://brianchun98.github.io/monaco-replay/
