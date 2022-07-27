@@ -24,6 +24,12 @@ function init() {
 		var output = document.getElementById("demo");
 		output.innerHTML = slider.value;
 		
+		var startbtn = document.getElementById("PlayBtn");
+		var stopbtn = document.getElementById("StopBtn");
+		var fastbtn = document.getElementById("FastBtn");
+		var resetbtn = document.getElementById("NormBtn");
+		var slowbtn = document.getElementById("SlowBtn");
+		var playspeed = document.getElementById("speed");
 		
 		//Creates firepad instance using monaco editor and runs the code-replay  
         require.config({ paths: {'vs': './node_modules/monaco-editor/min/vs'}});
@@ -64,49 +70,74 @@ function init() {
 			const keys = Object.keys(revisions).sort()
 			//Sets slider length match the number of "timeframes" in this instance of replay
 			slider.max = keys.indexOf(revision) + 1
-			var currInd = 0
 			//Create array to store the resulting strings at each timeframe to use with slider
 			const history = []
 			//Initialize the array by putting an empty string as its first element so that when the slider is at 0, the displayed editor is empty
 			history[0] = ""
-			var intervalID = setInterval(function(){
-				let operation = revisions[keys[currInd]]
+			for(let i = 0; i < keys.indexOf(revision) + 1; i++){
+				let operation = revisions[keys[i]]
 				//Composes operations together to create the resulting string up to that point in order to display it
 				document = document.compose(operation)
-				//Makes slider move as the code-replay is being played and sets the displayed "timeframe" value to match progress
-				slider.value = currInd + 1
-				output.innerHTML = slider.value
-				try{
-					var strarr = document.toJSON()
-					if (typeof strarr[0] === 'string' || strarr[0] instanceof String){
-						editor.setValue(strarr[0])
-						history[currInd+1] = strarr[0]
-					}
-					//Takes care of cases where an empty string(When there is nothing written on the editor i.e. when everything is deleted)
-					//is represented as integer 0 rather than ""
-					else if (strarr[0] === 0){
-						editor.setValue("")
-						history[currInd+1] = ""
-					}
+				var strarr = document.toJSON()
+				if (typeof strarr[0] === 'string' || strarr[0] instanceof String){
+					history[i+1] = strarr[0]
 				}
-				//Terminates the program when an error is raised
-				catch(e){
-					console.log(e)
-					clearInterval(intervalID)
+				//Takes care of cases where an empty string(When there is nothing written on the editor i.e. when everything is deleted)
+				//is represented as integer 0 rather than ""
+				else{
+					history[i+1] = ""
 				}
-				currInd++
-				if (keys[currInd-1] === revision) {
-					//Ends interval when operations until input timestamp are displayed
-					clearInterval(intervalID)
-					//Lets user use the slider to choose which timeframe of the code to view
-					slider.oninput = function() {
-  						output.innerHTML = this.value;
-  						editor.setValue(history[this.value])
+			}
+			//Initialize the editor so that it displays a blank editor
+			editor.setValue(history[slider.value])
+			//Let the displayed code change based on the position of the slider
+			slider.oninput = function() {
+  					output.innerHTML = this.value;
+  					editor.setValue(history[this.value])
+			}
+			var timing = 200
+			playspeed.innerHTML = timing
+			fastbtn.onclick = function(){
+				if(timing > 110){
+					timing -= 100
+					playspeed.innerHTML = timing
+				}
+			}
+			slowbtn.onclick = function(){
+				if(timing <1500){
+					timing += 100
+					playspeed.innerHTML = timing
+				}
+			}
+			resetbtn.onclick = function(){
+				timing = 200
+				playspeed.innerHTML = timing
+			}
+			startbtn.onclick = function(){
+				startbtn.disabled = true
+				var checker = true
+				var timeoutID = setTimeout(function loop(){
+					slider.value++
+					output.innerHTML = slider.value
+					var timenow = slider.value
+					editor.setValue(history[timenow])
+					//Ends the code-replay when edit history has been shown to the point indicated by the input timestamp
+					if(timenow == slider.max){
+						startbtn.disabled = false
+						checker = false
 					}
-				}
-			//Integer parameter to control how slow/fast the replay will be displayed
-			//1000 = update once per second (Lower numbers cause the replay to be faster)
-			}, 200)				
+					//Make the code-replay stop when the "stop" button is clicked
+					stopbtn.onclick = function(){
+						startbtn.disabled = false
+						checker = false
+					}
+					if(checker){
+						setTimeout(loop, timing)
+					}
+				//Integer parameter to control how slow/fast the replay will be displayed
+				//1000 = update once per second (Lower numbers cause the replay to be faster)	
+				}, timing)
+			}		
 		}
     }
 

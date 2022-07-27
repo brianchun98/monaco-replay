@@ -66,6 +66,44 @@
   			background: #04AA6D;
   			cursor: pointer;
 		}
+		
+		.button {
+  			background-color: #4CAF50; /* Green */
+  			border: none;
+  			color: white;
+  			padding: 15px 32px;
+  			text-align: center;
+  			text-decoration: none;
+  			display: inline-block;
+  			font-size: 16px;
+  			margin: 4px 2px;
+  			cursor: pointer;
+		}
+		
+		.button2 {
+			background-color: #f44336;
+		}
+		
+		.button3 {
+			background-color: #555555;
+		}
+		
+		.button1:hover {
+  			filter: brightness(150%);
+		}
+		
+		.button2:hover {
+  			filter: brightness(150%);
+		}
+		
+		.button3:hover {
+  			filter: brightness(150%);
+		}
+		
+		.button1:disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+		}
     </style>
 </head>
 <body>
@@ -74,8 +112,18 @@
   <input type="range" min="0" max="100" value="0" class="slider" id="myRange">
   <p>Timeframe: <span id="demo"></span></p>
 </div>
-<script>
+<button class="button button1" type="button" id="PlayBtn">Start</button>
 
+<button class="button button2" type="button" id="StopBtn">Stop</button><br>
+
+<button class="button button3" type="button" id="FastBtn">Faster</button>
+
+<button class="button button3" type="button" id="NormBtn">Reset Speed</button>
+
+<button class="button button3" type="button" id="SlowBtn">Slower</button><br>
+<p>Playspeed: <span id="speed"></span></p><br>
+<p>Lower number indicates faster speed (Default: 200)</p> 
+<script>
 </script>
 </body>
 </html>
